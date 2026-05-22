@@ -11,8 +11,8 @@ from pokete.base.color import Color
 from pokete.base.context import Context
 from pokete.base.input.hotkeys import Action, get_action
 from pokete.base.input.mouse import MouseEvent, MouseEventType
-from pokete.base.input_loops.new_text_input import TextInput
 from pokete.base.mouse import MouseInteractor, mouse_interaction_manager
+from pokete.base.ui.input import TextInput
 from pokete.base.ui.overview import Overview
 
 
@@ -116,6 +116,9 @@ class Slider(se.Box, Overview, MouseInteractor):
                 if event.pressed:
                     self.set_slider(area_idx)
                     self.__set_setting()
+            elif event.type == MouseEventType.DRAG_LEFT:
+                self.set_slider(area_idx)
+                self.__set_setting()
 
     def change(self, ctx: Context):
         """Changes the current position by a value
@@ -124,7 +127,7 @@ class Slider(se.Box, Overview, MouseInteractor):
         self.overview = ctx.overview
         ctx = change_ctx(ctx, self)
         while True:
-            action, _ = get_action()
+            action, _ = get_action()          
             if (strength := action.get_x_strength()) != 0:
                 if 0 <= (self.offset + strength) <= self.boundary:
                     self.set_slider(self.offset + strength)
@@ -148,18 +151,14 @@ class VisSetting(se.Text):
         self.name = text
         self.setting = settings(setting)
         self.index = list(options).index(self.setting.val)
-        super().__init__(
-            text + ": " + self.options[self.setting.val], state="float"
-        )
+        super().__init__(text + ": " + self.options[self.setting.val], state="float")
 
     def change(self, ctx: Context):
         """Change the setting"""
         self.index = (self.index + 1) % len(self.options)
         self.setting.val = list(self.options)[self.index]
         self.rechar(self.name + ": " + self.options[self.setting.val])
-        logging.info(
-            "[Setting][%s] set to %s", self.setting.name, self.setting.val
-        )
+        logging.info("[Setting][%s] set to %s", self.setting.name, self.setting.val)
 
 
 class Settings:
@@ -174,9 +173,7 @@ class Settings:
             "audio": True,
             "volume": 50,
         }
-        self.settings = [
-            Setting(name, val) for name, val in self.keywords.items()
-        ]
+        self.settings = [Setting(name, val) for name, val in self.keywords.items()]
 
     def from_dict(self, src):
         """Sets the settings from a dict

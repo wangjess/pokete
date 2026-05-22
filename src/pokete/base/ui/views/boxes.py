@@ -4,9 +4,9 @@ import scrap_engine as se
 
 from pokete.base.change import change_ctx
 from pokete.base.context import Context
-from pokete.base.input_loops.new_text_input import TextInput
 from pokete.base.mouse.interactor import MouseInteractor
 from pokete.base.ui.elements.labels import CloseLabel
+from pokete.base.ui.input import TextInput
 from pokete.base.ui.views.box import BoxView
 
 
@@ -69,8 +69,7 @@ class InputBoxView(InfoBoxView):
         height = len(infotext.split("\n")) + 3
         width = (
             sorted(
-                [len(i) for i in infotext.split("\n")]
-                + [len(introtext) + 1 + max_len]
+                [len(i) for i in infotext.split("\n")] + [len(introtext) + 1 + max_len]
             )[-1]
             + 4
         )
@@ -85,7 +84,8 @@ class InputBoxView(InfoBoxView):
         )
         self.__input = TextInput(
             self.text,
-            wrap_len=max_len,
+            wrap_len=max_len+1,
+            max_len=max_len,
         )
 
     @override
